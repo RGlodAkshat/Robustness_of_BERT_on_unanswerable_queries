@@ -1,0 +1,32 @@
+{
+  "original": {
+    "accuracy_no_answer": 0.83,
+    "hallucination_rate": 0.17000000000000004,
+    "avg_p_no_answer": 0.8339213525541961,
+    "ECE": 0.032321612919131604
+  },
+  "natural_edit": {
+    "accuracy_no_answer": 0.8775,
+    "hallucination_rate": 0.12250000000000005,
+    "avg_p_no_answer": 0.8709260601924315,
+    "ECE": 0.03015053097718931
+  },
+  "negation": {
+    "accuracy_no_answer": 0.835,
+    "hallucination_rate": 0.16500000000000004,
+    "avg_p_no_answer": 0.8299747787249587,
+    "ECE": 0.03716478172559211
+  },
+  "entity_swap": {
+    "accuracy_no_answer": 0.8375,
+    "hallucination_rate": 0.16249999999999998,
+    "avg_p_no_answer": 0.8365974133979105,
+    "ECE": 0.03129929878415798
+  },
+  "paraphrase": {
+    "accuracy_no_answer": 0.85,
+    "hallucination_rate": 0.15000000000000002,
+    "avg_p_no_answer": 0.8446563024406261,
+    "ECE": 0.031744512290494124
+  }
+}

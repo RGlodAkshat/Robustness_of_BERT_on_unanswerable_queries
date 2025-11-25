@@ -1,0 +1,53 @@
+# MRC Robustness Experiment Summary
+
+**Timestamp:** 20251126_011421
+**Model:** `deepset/roberta-base-squad2`
+**Base dataset:** SQuAD v2 validation (unanswerable subset)
+**Number of unanswerable examples used:** 400
+**Max examples cap:** 400
+**Perturbations applied:**
+- original
+- natural_edit
+- negation
+- entity_swap
+- paraphrase
+
+## Metrics per perturbation
+
+|              |   accuracy_no_answer |   hallucination_rate |   avg_p_no_answer |    ECE |
+|--------------|----------------------|----------------------|-------------------|--------|
+| entity_swap  |               0.8375 |               0.1625 |            0.8366 | 0.0313 |
+| natural_edit |               0.8875 |               0.1125 |            0.8791 | 0.0295 |
+| negation     |               0.8375 |               0.1625 |            0.8324 | 0.0336 |
+| original     |               0.83   |               0.17   |            0.8339 | 0.0323 |
+| paraphrase   |               0.8425 |               0.1575 |            0.8412 | 0.0289 |
+
+## Methodology (short description)
+
+We evaluate the robustness of a modern reading comprehension (MRC) model on unanswerable
+questions from the SQuAD v2 validation set. We first filter the dataset to keep only
+examples where the ground-truth answer is empty (i.e., the question is unanswerable
+given the context).
+
+For each context–question pair, we generate multiple perturbed versions of the context
+using the following transformations:
+1. original: no perturbation, original SQuAD v2 context.
+2. natural_edit: delete one sentence from the context to simulate a prior revision.
+3. negation: insert simple negations (e.g., 'is' -> 'is not') into the context.
+4. entity_swap: replace some common locations with African-origin entities.
+5. paraphrase: lightly shuffle sentences and swap simple synonyms as a stub for paraphrasing.
+
+For each (context, question) pair under each perturbation, we run the QA model and
+compute the null-vs-span score difference:
+    score_diff = (start_logits[CLS] + end_logits[CLS]) - best_non_null_span_score.
+We interpret:
+    - score_diff > 0  => model predicts "no answer".
+    - score_diff <= 0 => model predicts some answer span (hallucination in this setup).
+
+Since all questions are truly unanswerable, the ideal model always predicts "no answer".
+We report:
+    - accuracy_no_answer: fraction of examples where the model predicts "no answer".
+    - hallucination_rate: fraction where the model predicts a span (1 - accuracy).
+    - avg_p_no_answer: average sigmoid(score_diff), interpreted as the model's
+      confidence in "no answer".
+    - ECE: a simple expected calibration error over p(no-answer), using 10 bins.
